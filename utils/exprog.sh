@@ -35,7 +35,8 @@ EOF
 
 cat $* | \
 sed -n -e '/\/\*\*\*/,/\*\// p' | \
-sed -e 's/@section/@subsection/' \
+sed -e 's/^ *//' \
+    -e 's/@section/@subsection/' \
     -e 's/@..page \([^ ]*\)/@section \1 \1 --/'
 
 # Local Variables:
