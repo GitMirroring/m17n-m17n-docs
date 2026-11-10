@@ -51,8 +51,8 @@ AC_SUBST(M17N_LIBS)
 
 AC_CHECK_PROG(HAVEDOXYGEN, doxygen, yes, no)
 AC_CHECK_PROG(RUBY, ruby, yes, no)
-AC_CHECK_PROG(LATEX, latex, yes, no)
-AC_CHECK_PROG(PLATEX, platex, yes, no)
+AC_CHECK_PROG(PDFLATEX, pdflatex, yes, no)
+AC_CHECK_PROG(MAGICK, magick, yes, no)
 
 OK=yes
 if test "$HAVEDOXYGEN" = "no"; then
@@ -63,12 +63,12 @@ if test "$RUBY" = "no"; then
   echo "Can't find a program \"ruby\"!"
   OK=no
 fi
-if test "$LATEX" = "no"; then
-  echo "Can't find a program \"latex\"!"
+if test "$PDFLATEX" = "no"; then
+  echo "Can't find a program \"pdflatex\"!"
   OK=no
 fi
-if test "$PLATEX" = "no"; then
-  echo "Can't find a program \"platex\"!"
+if test "$MAGICK" = "no"; then
+  echo "Can't find a program \"pdflatex\"!"
   OK=no
 fi
 if test "$OK" = "no"; then
