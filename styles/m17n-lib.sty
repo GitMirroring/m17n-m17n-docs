@@ -4,16 +4,17 @@
 \addtolength{\textwidth}{-2in}
 \setlength{\textheight}{\paperheight}
 \addtolength{\textheight}{-2in}
+\setlength{\headheight}{13pt}
 \addtolength{\textheight}{-\headheight}
 \addtolength{\textheight}{-\headsep}
 \setlength{\headwidth}{\textwidth}
-\setlength{\topmargin}{0in}
+\setlength{\topmargin}{-1pt}
 \setlength{\oddsidemargin}{0in}
 \setlength{\evensidemargin}{0in}
 \setlength{\marginparsep}{0pt}
 \setlength{\marginparwidth}{0pt}
 \setlength{\footskip}{10.0pt}
-\def\narrowwidth{.8\textwidth}
+\def\narrowwidth{.6\textwidth}
 
 %% Don't write footers.
 \rfoot[]{}
@@ -52,3 +53,7 @@ copy of the license is included in the appendix entitled
 \def\IPApage#1{}
 
 \raggedright
+
+\newcommand{\img}[1]{\raisebox{-.25\baselineskip}{\includegraphics[height=\baselineskip]{#1}}}
+\newcommand{\uni}[1]{\raisebox{-.25\baselineskip}{\includegraphics[height=\baselineskip]{unichars/#1.png}}}
+\hbadness=5000
