@@ -1,4 +1,5 @@
 #! /usr/bin/ruby
+# coding: utf-8
 
 buf = [] 
 doxy = 0
@@ -36,13 +37,13 @@ while gets
 
      case  $_
 
-      when /^\s*$/                         
-	 if doxy == 1 			    # empty line in doxygen comment
+      when /^\s*$/
+	 if doxy == 1                       # empty line in doxygen comment
             buf.push($_)
 	    end
 
       when /\/\*=\*\//                      #/*=*/ (flush)
-     	commentblock(buf)
+	commentblock(buf)
     	buf = []
 
       when /\/\* @[{}] \*\//	# /* comment */ type comment 
@@ -112,8 +113,12 @@ while gets
     	   buf = []
 	   print($_)
         end
-     end	
+     end
    end
 end
 
 commentblock(buf)
+
+# Local Variables:
+# coding: utf-8
+# End:
