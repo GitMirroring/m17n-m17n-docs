@@ -35,15 +35,17 @@ while gets
 
     else  # when example == 0
 
-   case  $_
-     when /^\s*$/
-	if doxy == 1	                    # empty line in doxygen comment
-           buf.push($_)
-	   end
-     when /\/\*=\*\//                         #/*=*/ (flush)
-    	commentblock(buf)
+     case  $_
+
+      when /^\s*$/
+	 if doxy == 1                       # empty line in doxygen comment
+            buf.push($_)
+	    end
+
+      when /\/\*=\*\//                      #/*=*/ (flush)
+	commentblock(buf)
     	buf = []
-   
+
       when /^\/\*\s.*\*\//	# /* comment */ type comment 
 #	if doxy == 1		
 #	  # should be included only in the example code
@@ -104,7 +106,7 @@ while gets
     	   buf = []
 	   print($_)
         end
-    end
+     end
    end
 end
 
