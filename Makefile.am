@@ -76,7 +76,7 @@ EXAMPLE_PROGS = \
 DBFORMAT = \
 	@M17NDB@/FORMATS
 
-MAN1 =	data/m17n-config.txt data/m17n-db.txt ${EXAMPLE_PROGS} data/exprog.txt
+MAN1 =	data/m17n-config.txt data/m17n-db.txt ${EXAMPLE_PROGS}
 
 MAN3 =	@M17NLIB@/src/m17n-core.h \
 	@M17NLIB@/src/m17n.h \
@@ -95,7 +95,9 @@ SRCALL = \
 	data/dbformat.txt data/dbdata.txt data/dbtutorial.txt fdl.txt
 
 DBDATA = $(shell ls @M17NDB@/*.{dir,fst,tbl} @M17NDB@/MIM/*.mim @M17NDB@/FLT/*.flt @M17NDB@/LANGDATA/LANGUAGE.tbl)
-DBIMAGE = $(shell ls images/*.png images/*.eps)
+DBIMAGE = $(wildcard images/*.png)
+
+IMICONS = $(wildcard @M17NDB@/icons/*.png)
 
 HTML_USR_TARGET = usr/html/index.html usr/html/parrot.png
 HTML_JA_TARGET = ja/html/index.html ja/html/parrot.png
@@ -106,9 +108,9 @@ usr-html html-usr: ${HTML_USR_TARGET}
 ja-html html-ja: ${HTML_JA_TARGET}
 dev-html html-dev: ${HTML_DEV_TARGET}
 
-LATEX_USR_TARGET = usr/latex/m17n-lib.dvi usr/latex/m17n-lib.pdf
-LATEX_JA_TARGET = ja/latex/m17n-lib.dvi ja/latex/m17n-lib.pdf
-LATEX_DEV_TARGET = dev/latex/m17n-lib.dvi dev/latex/m17n-lib.pdf
+LATEX_USR_TARGET = usr/latex/m17n-lib.pdf
+LATEX_JA_TARGET = ja/latex/m17n-lib.pdf
+LATEX_DEV_TARGET = dev/latex/m17n-lib.pdf
 LATEX_TARGET = ${LATEX_USR_TARGET} ${LATEX_JA_TARGET} ${LATEX_DEV_TARGET}
 
 usr-latex latex-usr: ${LATEX_USR_TARGET}
@@ -117,7 +119,6 @@ dev-latex latex-dev: ${LATEX_DEV_TARGET}
 
 MAN_TARGET = \
 	man/man1/m17n-config.1 \
-	man/man1/m17n-db.1 \
 	man/man3/m17nIntro.3m17n \
 	man/man5/mdbGeneral.5
 
@@ -146,7 +147,8 @@ doxyfile: Makefile
 	      -e '/^OUTPUT_LANGUAGE / s/=.*/= %OUTPUT_LANGUAGE%/' \
 	      -e '/^FULL_PATH_NAMES / s/=.*/= NO/' \
 	      -e '/^OPTIMIZE_OUTPUT_FOR_C / s/=.*/= YES/' \
-	      -e '/^EXTRACT_ALL / s/=.*/= YES/' \
+	      -e '/^MARKDOWN_SUPPORT / s/=.*/= NO/' \
+	      -e '/^EXTRACT_ALL / s/=.*/= NO/' \
 	      -e '/^SHOW_INCLUDE_FILES / s/=.*/= NO/' \
 	      -e '/^SHOW_MEMBER_DOCS / s/=.*/= NO/' \
 	      -e '/^ENABLED_SECTIONS / s/=.*/= %ENABLED_SECTIONS%/' \
@@ -171,9 +173,11 @@ doxyfile: Makefile
 	      -e '/^MAN_EXTENSION / s/=.*/= %MAN_EXTENSION%/' \
 	      -e '/^PREDEFINED / s/=.*/= FOR_DOXYGEN/' \
 	      -e '/^GENERATE_TAGFILE / s/=.*/= m17n.tag/' \
+	      -e '/^HIDE_UNDOC_.* / s/=.*/= YES/' \
 	      -e '/^TYPEDEF_HIDES_STRUCT / s/=.*/= YES/' \
 	      -e '/^DOT_FONTNAME / s/=.*/=/' \
 	      -e '/^SORT_MEMBER_DOCS / s/=.*/= NO/' \
+	      -e '/^HAVE_DOT / s/=.*/= NO/' \
 	      > $@
 
 doxyfile-html: doxyfile ${SRCALL}
@@ -230,33 +234,72 @@ doxyfile-latex.ja: doxyfile-latex
 	    -e 's/%OUTPUT_LANGUAGE%/Japanese/' \
 	  < $< >$@
 
-doxyfile-man1: doxyfile ${SRCALL}
+doxyfile-man1tag: doxyfile ${MAN1}
+	sed -e 's|%PROJECT_NUMBER%|@PACKAGE_VERSION@|' \
+	    -e 's|%INPUT%|${MAN1}|' \
+	    -e 's|%GENERATE_HTML%|NO|' \
+	    -e 's|%GENERATE_LATEX%|NO|' \
+	    -e 's|%GENERATE_MAN%|NO|' \
+	    -e 's|%MAN_EXTENSION%|.3m17n|' \
+	    -e '/^WARN_IF_DOC_ERROR / s,=.*,= NO,' \
+	    -e '/^GENERATE_TAGFILE / s,=.*,= %USR_JA_DEV%/man/man1.tag,' \
+	    -e 's|%ENABLED_SECTIONS%|FOR_MAN|' \
+	  < $< >$@
+
+doxyfile-man1: doxyfile ${MAN1}
 	sed -e 's|%PROJECT_NUMBER%|@PACKAGE_VERSION@|' \
 	    -e 's|%INPUT%|${MAN1}|' \
 	    -e 's|%GENERATE_HTML%|NO|' \
 	    -e 's|%GENERATE_LATEX%|NO|' \
 	    -e 's|%GENERATE_MAN%|YES|' \
 	    -e 's|%MAN_EXTENSION%|.1|' \
+	    -e '/^TAGFILES / s,=.*,= %USR_JA_DEV%/man/man5.tag=../man5,' \
 	    -e 's|%ENABLED_SECTIONS%|FOR_MAN|' \
 	  < $< >$@
 
-doxyfile-man3: doxyfile ${SRCALL}
+doxyfile-man3tag: doxyfile ${MAN3}
+	sed -e 's|%PROJECT_NUMBER%|@PACKAGE_VERSION@|' \
+	    -e 's|%INPUT%|${MAN3}|' \
+	    -e 's|%GENERATE_HTML%|NO|' \
+	    -e 's|%GENERATE_LATEX%|NO|' \
+	    -e 's|%GENERATE_MAN%|NO|' \
+	    -e 's|%MAN_EXTENSION%|.3m17n|' \
+	    -e '/^WARN_IF_DOC_ERROR / s,=.*,= NO,' \
+	    -e '/^GENERATE_TAGFILE / s,=.*,= %USR_JA_DEV%/man/man3.tag,' \
+	    -e 's|%ENABLED_SECTIONS%|FOR_MAN|' \
+	  < $< >$@
+
+doxyfile-man3: doxyfile ${MAN3}
 	sed -e 's|%PROJECT_NUMBER%|@PACKAGE_VERSION@|' \
 	    -e 's|%INPUT%|${MAN3}|' \
 	    -e 's|%GENERATE_HTML%|NO|' \
 	    -e 's|%GENERATE_LATEX%|NO|' \
 	    -e 's|%GENERATE_MAN%|YES|' \
 	    -e 's|%MAN_EXTENSION%|.3m17n|' \
+	    -e '/^TAGFILES / s,=.*,= %USR_JA_DEV%/man/man1.tag=../man1 %USR_JA_DEV%/man/man5.tag=../man5,' \
 	    -e 's|%ENABLED_SECTIONS%|FOR_MAN|' \
 	  < $< >$@
 
-doxyfile-man5: doxyfile ${SRCALL}
+doxyfile-man5tag: doxyfile ${MAN5}
+	sed -e 's|%PROJECT_NUMBER%|@PACKAGE_VERSION@|' \
+	    -e 's|%INPUT%|${MAN5}|' \
+	    -e 's|%GENERATE_HTML%|NO|' \
+	    -e 's|%GENERATE_LATEX%|NO|' \
+	    -e 's|%GENERATE_MAN%|NO|' \
+	    -e 's|%MAN_EXTENSION%|.5|' \
+	    -e '/^WARN_IF_DOC_ERROR / s,=.*,= NO,' \
+	    -e '/^GENERATE_TAGFILE / s,=.*,= %USR_JA_DEV%/man/man5.tag,' \
+	    -e 's|%ENABLED_SECTIONS%|FOR_MAN|' \
+	  < $< >$@
+
+doxyfile-man5: doxyfile ${MAN5}
 	sed -e 's|%PROJECT_NUMBER%|@PACKAGE_VERSION@|' \
 	    -e 's|%INPUT%|${MAN5}|' \
 	    -e 's|%GENERATE_HTML%|NO|' \
 	    -e 's|%GENERATE_LATEX%|NO|' \
 	    -e 's|%GENERATE_MAN%|YES|' \
 	    -e 's|%MAN_EXTENSION%|.5|' \
+	    -e '/^TAGFILES / s,=.*,= %USR_JA_DEV%/man/man3.tag=../man3,' \
 	    -e 's|%ENABLED_SECTIONS%|FOR_MAN|' \
 	  < $< >$@
 
@@ -287,40 +330,51 @@ data/m17n-db.txt: @M17NDB@/m17n-db.in data
 	sed -n -e '/\/\*\*\*/,/\*\// p' < $< > $@
 
 %/html/index.html: doxyfile-html.% header.%.html footer.%.html ${SRCALL} \
-			utils/%_filter.rb m17n-lib.css
+		utils/%_filter.sh utils/%_filter.rb m17n-lib.css ${IMICONS}
 	rm -f `dirname $@`/*.html
 	${DOXYGEN} $<
-	cp images/icon-*.png `dirname $@`
+	[ -d `dirname $@`/icons ] || mkdir `dirname $@`/icons
+	cp @M17NDB@/icons/*.png `dirname $@`/icons
 	echo 'code { font-weight: bold }' >> `dirname $@`/doxygen.css
 
-%/html/parrot.png: parrot.png
+%/html/parrot.png: images/parrot.png
 	cp $< $@
 
 %/latex/refman.tex: doxyfile-latex.% ${SRCALL} utils/%_filter.rb
-	rm -rf `dirname $@`
+#	rm -rf `dirname $@`
 	${DOXYGEN} $<
 
-%/latex/m17n-lib.dvi: %/latex/refman.tex styles/m17n-lib.sty utils/latex.sh
-	-utils/latex.sh `dirname $@`
+%/latex/m17n-lib.pdf: %/latex/refman.tex styles/m17n-lib.sty utils/latex.sh ${IMICONS}
+	[ -d `dirname $@`/icons ] || mkdir `dirname $@`/icons
+#	For latex, @image is not used for icons and unichars (image of
+#	Unicode characters over U+0100), thus they must be copied here.
+	cp -u -r @M17NDB@/icons `dirname $@`
+	cp -u -r unichars `dirname $@`
+	-utils/latex.sh `dirname $@` @M17NDB@
 
-%/latex/m17n-lib.ps: %/latex/m17n-lib.dvi utils/dvips.sh
-	utils/dvips.sh `dirname $@` dvips
-#	emacs -batch -q -l utils/mokuji.el -f write-mokuji $@
+%/man/man1.tag: doxyfile-man1tag.% ${MAN1} utils/%_filter.rb
+	[ -d `dirname $@` ] || mkdir -p `dirname $@`
+	${DOXYGEN} $<
 
-%/latex/m17n-lib.pdf: %/latex/refman.tex styles/m17n-lib.sty utils/latex.sh
-	-utils/latex.sh `dirname $@`
+%/man/man3.tag: doxyfile-man3tag.% ${MAN3} utils/%_filter.rb
+	[ -d `dirname $@` ] || mkdir -p `dirname $@`
+	${DOXYGEN} $<
 
-%/man/man1/m17n-config.1: doxyfile-man1.% ${MAN1} utils/%_filter.rb
+%/man/man5.tag: doxyfile-man5tag.% ${MAN5} utils/%_filter.rb
+	[ -d `dirname $@` ] || mkdir -p `dirname $@`
+	${DOXYGEN} $<
+
+%/man/man1/m17n-config.1: doxyfile-man1.% ${MAN1} %/man/man5.tag utils/%_filter.rb
 	rm -rf `dirname $@`
 	cp doxyfile-man1.usr temp
 	${DOXYGEN} $<
 	cd `dirname $@`; rm -f _*.1 *.c.1 *.txt.1
 
-%/man/man3/m17nIntro.3m17n: doxyfile-man3.% ${MAN3} utils/%_filter.rb
+%/man/man3/m17nIntro.3m17n: doxyfile-man3.% ${MAN3} %/man/man1.tag %/man/man5.tag utils/%_filter.rb
 	rm -rf `dirname $@`
 	${DOXYGEN} $<
 
-%/man/man5/mdbGeneral.5: doxyfile-man5.% ${MAN5} utils/%_filter.rb
+%/man/man5/mdbGeneral.5: doxyfile-man5.% ${MAN5} %/man/man3.tag utils/%_filter.rb
 	rm -rf `dirname $@`
 	${DOXYGEN} $<
 
@@ -376,7 +430,7 @@ man/ja/man5/%: ja/man/man5/% sample/man3/SampleGroup.3 utils/mkman.rb
 CLEANFILES=doxyfile* ${TARGET} data/*.txt *.tar.gz warning *~
 
 clean-local:
-	rm -rf usr dev ja man doxywork
+	rm -rf unichars usr dev ja man doxywork
 
 dist-tgz: distdir
 	for d in usr ja; do \
@@ -397,7 +451,7 @@ release: dist-tgz
 	cp ${distdir}.tar.gz ${WEBDIR}/download
 
 
-.PRECIOUS: %/latex/refman.tex %/man/man3/m17nIntro.3m ${SRCALL}
+.SECONDARY:
 
 endif
 
