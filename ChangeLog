@@ -1,3 +1,53 @@
+2026-11-11  K. Handa  <handa@gnu.org>
+
+	* utils/ja_filter.rb, utils/usr_filter.rb: Just cosmetic change
+	(adjust indentations).
+
+	* utils/imdoc.c (struct CommentList): Delete it.
+	(mt_looking_at, mt_insert): New function.
+	(main): Change section format to icon and filename.  Generate
+	character images for non-Latin characters including the comments
+	following ";;; ".  Fix various problems related to HTML and LaTeX
+	syntax by modifying MText before encoding it out to stdout.
+
+	* Makefile.am (MAN1): Do not include data/exprog.txt.
+	(DBIMAGE): Do not include *.eps.
+	(IMICONS): New variable.
+	(LATEX_USR_TARGET, LATEX_JA_TARGET, LATEX_DEV_TARGET): Do not
+	include *.dvi.
+	(MAN_TARGET): Do not include m17n-db.1.
+	(doxyfile): Set EXTRACT_ALL to NO, HIDE_UNDOC to YES, HAVE_DOT to NO.
+	(doxyfile-man1tag, doxyfile-man3tag, doxyfile-man5tag): New targets.
+	(doxyfile-man1, doxyfile-man3, doxyfile-man5): Add man*.tag to
+	TAGFILES.
+	(%/html/index.html): Depends on ${IMICONS}.  Copy icons to a
+	proper directory.
+	(%/man/man1/m17n-config.1): Depends on .../man5.tag.
+	(%/man/man3/m17nIntro.3m17n): Depends on .../man1.tag and .../man5.tag.
+	(%/man/man5/mdbGeneral.5): Depends on .../man3.tag.
+	(clean-local): Remove unichars too.
+	(.PRECIOUS): Delete it.
+	(.SECONDARY): New target.
+
+	* utils/latex.sh: Fix for the new Doxygen (handling of ja,
+	workaround for a bug of label command).
+
+	* utils/exprog.sh: Remove spaces at BOL.
+
+	* utils/dbdata.sh: Handle all input methods by imdoc.
+
+	* styles/m17n-lib.sty: Adjust headheight, topmargin, narrowwidth,
+	and \hbadness.
+	(img, uni): New commands
+
+2026-11-09  K. Handa  <handa@gnu.org>
+
+	* configure.ac: Check pdflatex and magick, instead of ltex and platex.
+
+	* DoxygenLayout.xml: New file.
+
+	* images/parrot.png: Move from ./parrot.png.
+
 2026-10-20  Mike FABIAN  <mfabian@redhat.com>
 
 	* utils/dbdata.sh, utils/imdoc.c: use magick instead of convert to
