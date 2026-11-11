@@ -1,3 +1,7 @@
+2026-11-11  K. Hannda  <handa@gnu.org>
+
+	* utils/usr_filter.sh, utils/ja_filter.sh: Call ruby with "-Ku" arg.
+
 2026-11-11  K. Handa  <handa@gnu.org>
 
 	* utils/ja_filter.rb, utils/usr_filter.rb: Just cosmetic change
